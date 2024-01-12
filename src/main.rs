@@ -112,6 +112,8 @@ fn send_email_with_multiple_recipients() {
 
     for recipient in recipients {
         email = email.to(recipient.parse::<Mailbox>().unwrap());
+        // email = email.cc(recipient.parse::<Mailbox>().unwrap());
+        // email = email.bcc(recipient.parse::<Mailbox>().unwrap());
     }
 
     let email = email
