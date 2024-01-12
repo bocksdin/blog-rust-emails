@@ -4,7 +4,25 @@ use lettre::{
     Message, SmtpTransport, Transport,
 };
 
+fn create_mailer() -> SmtpTransport {
+    // Get the username and password from the env file
+    let username = std::env::var("EMAIL_USERNAME").expect("EMAIL_USERNAME not set");
+    let password = std::env::var("EMAIL_PASSWORD").expect("EMAIL_PASSWORD not set");
+
+    // Create the credentials
+    let creds = Credentials::new(username, password);
+
+    // Create a connection to our email provider
+    // In this case, we are using Namecheap's Private Email
+    // You can use any email provider you want
+    SmtpTransport::relay("mail.privateemail.com")
+        .unwrap()
+        .credentials(creds)
+        .build()
+}
+
 fn send_email() {
+    // Build the email
     let email = Message::builder()
         .from("contact@bocksdincoding.com".parse::<Mailbox>().unwrap())
         .to("questions@bocksdincoding.com".parse::<Mailbox>().unwrap())
@@ -12,16 +30,9 @@ fn send_email() {
         .body("Hello, this is a test email!".to_string())
         .unwrap();
 
-    let username = std::env::var("EMAIL_USERNAME").expect("EMAIL_USERNAME not set");
-    let password = std::env::var("EMAIL_PASSWORD").expect("EMAIL_PASSWORD not set");
+    let mailer = create_mailer();
 
-    let creds = Credentials::new(username, password);
-
-    let mailer = SmtpTransport::relay("mail.privateemail.com")
-        .unwrap()
-        .credentials(creds)
-        .build();
-
+    // Send the email
     match mailer.send(&email) {
         Ok(_) => println!("Basic email sent!"),
         Err(error) => {
@@ -44,15 +55,7 @@ fn send_email_with_html() {
         )
         .unwrap();
 
-    let username = std::env::var("EMAIL_USERNAME").expect("EMAIL_USERNAME not set");
-    let password = std::env::var("EMAIL_PASSWORD").expect("EMAIL_PASSWORD not set");
-
-    let creds = Credentials::new(username, password);
-
-    let mailer = SmtpTransport::relay("mail.privateemail.com")
-        .unwrap()
-        .credentials(creds)
-        .build();
+    let mailer = create_mailer();
 
     match mailer.send(&email) {
         Ok(_) => println!("Email with HTML sent!"),
@@ -86,15 +89,7 @@ fn send_email_with_attachments() {
         )
         .unwrap();
 
-    let username = std::env::var("EMAIL_USERNAME").expect("EMAIL_USERNAME not set");
-    let password = std::env::var("EMAIL_PASSWORD").expect("EMAIL_PASSWORD not set");
-
-    let creds = Credentials::new(username, password);
-
-    let mailer = SmtpTransport::relay("mail.privateemail.com")
-        .unwrap()
-        .credentials(creds)
-        .build();
+    let mailer = create_mailer();
 
     match mailer.send(&email) {
         Ok(_) => println!("Email with attachments sent!"),
@@ -123,15 +118,7 @@ fn send_email_with_multiple_recipients() {
         .body("Hello, this is a test email!".to_string())
         .unwrap();
 
-    let username = std::env::var("EMAIL_USERNAME").expect("EMAIL_USERNAME not set");
-    let password = std::env::var("EMAIL_PASSWORD").expect("EMAIL_PASSWORD not set");
-
-    let creds = Credentials::new(username, password);
-
-    let mailer = SmtpTransport::relay("mail.privateemail.com")
-        .unwrap()
-        .credentials(creds)
-        .build();
+    let mailer = create_mailer();
 
     match mailer.send(&email) {
         Ok(_) => println!("Email with multiple recipients sent!"),
